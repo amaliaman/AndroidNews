@@ -2,13 +2,20 @@ package com.example.ami.androidnews;
 
 import android.app.LoaderManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.Loader;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,19 +25,36 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             "q=android&section=technology&api-key=test&show-fields=trailText,byline,thumbnail&" +
             "order-by=newest&format=json&type=article";
     private static final int ARTICLE_LOADER_ID = 1;
-    private ArticleArrayAdapter mAdapter;
 
-    ListView articlesListView;
+    private ArticleArrayAdapter mAdapter;
+    TextView emptyView;
+    ProgressBar indeterminateBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Find a reference to the {@link ListView} in the layout
+        ListView articlesListView = findViewById(R.id.articles_list);
+        emptyView = findViewById(R.id.empty);
+        indeterminateBar = findViewById(R.id.indeterminateBar);
+
+        // Set empty view
+        articlesListView.setEmptyView(emptyView);
+
         // Set array adapter
-        articlesListView = findViewById(R.id.articles_list);
         mAdapter = new ArticleArrayAdapter(this, new ArrayList<Article>());
         articlesListView.setAdapter(mAdapter);
+
+        articlesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                URL url = mAdapter.getItem(position).getArticleUrl();
+                Intent linkIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.toString()));
+                startActivity(linkIntent);
+            }
+        });
 
         // Check connectivity before querying
         ConnectivityManager cm =
@@ -41,8 +65,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         if (isConnected) {
             getLoaderManager().initLoader(ARTICLE_LOADER_ID, null, this);
         }
-
-
+        else {
+            indeterminateBar.setVisibility(View.GONE);
+            emptyView.setText(R.string.no_connection);
+        }
     }
     /*
     Implementation of LoaderManager.LoaderCallbacks interface
@@ -55,8 +81,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<List<Article>> loader, List<Article> data) {
-//        indeterminateBar.setVisibility(View.GONE);
-//        emptyView.setText(R.string.empty_string);
+        indeterminateBar.setVisibility(View.GONE);
+        emptyView.setText(R.string.empty_string);
 
         // Clear the adapter of previous articles data
         mAdapter.clear();

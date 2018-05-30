@@ -14,9 +14,12 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Helper methods related to requesting and receiving data from the web.
@@ -125,14 +128,18 @@ final class QueryUtils {
         return extractArticles(jsonResponse);
     }
 
+    /**
+     * Return a list of {@link Article} objects that has been built up from
+     * parsing a JSON response.
+     */
     private static List<Article> extractArticles(String jsonResponse) {
-
         // Create an empty ArrayList that we can start adding articles to
         List<Article> articles = new ArrayList<>();
         try {
             JSONObject jsonRootObject = new JSONObject(jsonResponse);
             // Get 'response' object
             JSONObject jsonResponseObject = jsonRootObject.getJSONObject("response");
+
             // Get 'results' array
             JSONArray jsonResultsArray = jsonResponseObject.optJSONArray("results");
             for (int i = 0; i < jsonResultsArray.length(); i++) {
@@ -154,14 +161,24 @@ final class QueryUtils {
 
                 // Add Article to list
                 articles.add(new Article(title, trail, byLine, createUrl(articleUrl),
-                        createUrl(thumbnailUrl), new Date()));
+                        createUrl(thumbnailUrl), getDateFromString(date)));
             }
-
         } catch (JSONException e) {
-            Log.e("QueryUtils", "Problem parsing the article JSON results", e);
+            Log.e(LOG_TAG, "Problem parsing the article JSON results", e);
         }
 
         // Return the list of articles
         return articles;
+    }
+
+    private static Date getDateFromString(String dateString) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
+        Date date = null;
+        try {
+            date = formatter.parse(dateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
     }
 }

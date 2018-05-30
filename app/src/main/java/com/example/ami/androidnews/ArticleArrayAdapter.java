@@ -9,7 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class ArticleArrayAdapter extends ArrayAdapter<Article> {
 
@@ -42,7 +45,14 @@ public class ArticleArrayAdapter extends ArrayAdapter<Article> {
             TextView byLineTextView = listItemView.findViewById(R.id.by_line);
             byLineTextView.setText(currentArticle.getByLine());
 
+            // Set the current article's date
+            TextView dateTextView = listItemView.findViewById(R.id.date);
+            dateTextView.setText(getDateString(currentArticle.getPublicationDate()));
         }
         return listItemView;
+    }
+
+    private String getDateString(Date date) {
+        return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault()).format(date);
     }
 }

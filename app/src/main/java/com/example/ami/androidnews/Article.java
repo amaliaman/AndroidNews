@@ -24,7 +24,7 @@ public class Article {
      * @param thumbnailUrl is the url of the article's thumbnail image in the website
      * @param publicationDate is when the article was published
      */
-    public Article(String title, String trail, String byLine, URL articleUrl,
+    Article(String title, String trail, String byLine, URL articleUrl,
                    URL thumbnailUrl, Date publicationDate) {
         this.mTitle = title;
         this.mTrail = trail;
