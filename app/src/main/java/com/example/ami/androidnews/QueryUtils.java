@@ -14,6 +14,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,7 +34,7 @@ final class QueryUtils {
     /**
      * Returns new URL object from the given string URL.
      */
-    public static URL createUrl(String stringUrl) {
+    private static URL createUrl(String stringUrl) {
         URL url = null;
         try {
             url = new URL(stringUrl);
@@ -45,7 +47,7 @@ final class QueryUtils {
     /**
      * Make an HTTP request to the given URL and return a String as the response.
      */
-    public static String makeHttpRequest(URL url) throws IOException {
+    private static String makeHttpRequest(URL url) throws IOException {
         String jsonResponse = "";
 
         // If the URL is null, then return early.
@@ -71,7 +73,7 @@ final class QueryUtils {
                 Log.e(LOG_TAG, "Error response code: " + urlConnection.getResponseCode());
             }
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Problem retrieving the earthquake JSON results.", e);
+            Log.e(LOG_TAG, "Problem retrieving the article JSON results.", e);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -104,7 +106,7 @@ final class QueryUtils {
     /**
      * Query the web API and return a {@link List<Article>} to represent a list of articles.
      */
-    public static String fetchArticlesData(String requestUrl) {
+    public static List<Article> fetchArticlesData(String requestUrl) {
         // Create URL object
         URL url = createUrl(requestUrl);
 
@@ -117,45 +119,49 @@ final class QueryUtils {
         }
 
         // Extract relevant fields from the JSON response and create an {@link Article} object
-        /////////////////////List<Article> articles = extractArticles(jsonResponse);
+//        List<Article> articles = extractArticles(jsonResponse);
 
-        // Return the {@link List<Article>}
+        // Return the List<Article>
         return extractArticles(jsonResponse);
     }
 
-    private static String extractArticles(String jsonResponse) {
+    private static List<Article> extractArticles(String jsonResponse) {
 
-        // Create an empty ArrayList that we can start adding earthquakes to
-//        List<Article> earthquakes = new ArrayList<>();
-        String place="";
-        // Try to parse the SAMPLE_JSON_RESPONSE. If there's a problem with the way the JSON
-        // is formatted, a JSONException exception object will be thrown.
-        // Catch the exception so the app doesn't crash, and print the error message to the logs.
+        // Create an empty ArrayList that we can start adding articles to
+        List<Article> articles = new ArrayList<>();
         try {
             JSONObject jsonRootObject = new JSONObject(jsonResponse);
-            // Get results array
+            // Get 'response' object
             JSONObject jsonResponseObject = jsonRootObject.getJSONObject("response");
+            // Get 'results' array
             JSONArray jsonResultsArray = jsonResponseObject.optJSONArray("results");
             for (int i = 0; i < jsonResultsArray.length(); i++) {
-                // Get i result object in array
+                // Get current result object in array
                 JSONObject jsonResultObject = jsonResultsArray.getJSONObject(i);
-                // Get title string
-//                JSONObject jsonPropertiesObject = jsonResultObject.getJSONObject("properties");
-//                double mag = jsonPropertiesObject.optDouble("mag");
-                place = jsonResultObject.optString("webTitle");
-//                long time = jsonPropertiesObject.optLong("time");
-//                String url = jsonPropertiesObject.optString("url");
-//                earthquakes.add(new Earthquake(place, mag, time, url));
+
+                // Get properties from 'result'
+                String title = jsonResultObject.optString("webTitle");
+                String articleUrl = jsonResultObject.optString("webUrl");
+                String date = jsonResultObject.optString("webPublicationDate");
+
+                // Get 'fields' object
+                JSONObject jsonFieldsObject = jsonResultObject.getJSONObject("fields");
+
+                // Get properties from 'fields'
+                String trail = jsonFieldsObject.optString("trailText");
+                String byLine = jsonFieldsObject.optString("byline");
+                String thumbnailUrl = jsonFieldsObject.optString("thumbnail");
+
+                // Add Article to list
+                articles.add(new Article(title, trail, byLine, createUrl(articleUrl),
+                        createUrl(thumbnailUrl), new Date()));
             }
 
         } catch (JSONException e) {
-            // If an error is thrown when executing any of the above statements in the "try" block,
-            // catch the exception here, so the app doesn't crash. Print a log message
-            // with the message from the exception.
-            Log.e("QueryUtils", "Problem parsing the earthquake JSON results", e);
+            Log.e("QueryUtils", "Problem parsing the article JSON results", e);
         }
 
-        // Return the list of earthquakes
-        return place;
+        // Return the list of articles
+        return articles;
     }
 }

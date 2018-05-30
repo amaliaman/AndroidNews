@@ -3,7 +3,9 @@ package com.example.ami.androidnews;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 
-public class ArticleLoader extends AsyncTaskLoader<String> {
+import java.util.List;
+
+public class ArticleLoader extends AsyncTaskLoader<List<Article>> {
 
     /**
      * Query URL
@@ -27,14 +29,12 @@ public class ArticleLoader extends AsyncTaskLoader<String> {
     }
 
     @Override
-    public String loadInBackground() {
+    public List<Article> loadInBackground() {
         if (mUrl == null) {
             return null;
         }
-        String a = "";
-        // Perform the network request, parse the response, and extract a list of earthquakes.
-        a = QueryUtils.fetchArticlesData(mUrl);
 
-        return a;
+        // Perform the network request, parse the response, and extract a list of articles.
+        return QueryUtils.fetchArticlesData(mUrl);
     }
 }
