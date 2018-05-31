@@ -54,7 +54,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 URL url = mAdapter.getItem(position).getArticleUrl();
                 Intent linkIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.toString()));
-                startActivity(linkIntent);
+                // Check if a suitable app is installed
+                if (linkIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(linkIntent);
+                }
             }
         });
 
@@ -73,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 (ConnectivityManager) getBaseContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm != null ? cm.getActiveNetworkInfo() : null;
 
-        // Procees if there's a connection
+        // Proceed if there's a connection
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
         if (isConnected) {
             getLoaderManager().initLoader(ARTICLE_LOADER_ID, null, this);

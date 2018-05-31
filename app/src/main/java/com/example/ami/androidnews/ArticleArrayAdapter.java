@@ -21,43 +21,53 @@ public class ArticleArrayAdapter extends ArrayAdapter<Article> {
         super(context, 0, articles);
     }
 
+    // View holder for quick access to views
+    static class ViewHolder {
+        TextView titleTextView;
+        TextView trailTextView;
+        TextView sectionTextView;
+        TextView byLineTextView;
+        TextView dateTextView;
+    }
+
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        ViewHolder viewHolder;
 
         // Check if the existing view is being reused, otherwise inflate the view
         View listItemView = convertView;
         if (listItemView == null) {
             listItemView = LayoutInflater.from(getContext()).inflate(R.layout.list_item, parent, false);
+
+            // Set the ViewHolder
+            viewHolder = new ViewHolder();
+            viewHolder.titleTextView = listItemView.findViewById(R.id.title);
+            viewHolder.trailTextView = listItemView.findViewById(R.id.trail);
+            viewHolder.sectionTextView = listItemView.findViewById(R.id.section);
+            viewHolder.byLineTextView = listItemView.findViewById(R.id.by_line);
+            viewHolder.dateTextView = listItemView.findViewById(R.id.date);
+
+            // store the holder with the view.
+            listItemView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) listItemView.getTag();
         }
         // Get the {@link Article} object located at this position in the list
         final Article currentArticle = getItem(position);
 
         if (currentArticle != null) {
-            // Set the current article's title
-            TextView titleTextView = listItemView.findViewById(R.id.title);
-            titleTextView.setText(currentArticle.getTitle());
-
-            // Set the current article's trail text
-            TextView trailTextView = listItemView.findViewById(R.id.trail);
-            trailTextView.setText(Html.fromHtml(currentArticle.getTrail()));
-
-            // Set the current article's section
-            TextView sectionTextView = listItemView.findViewById(R.id.section);
-            sectionTextView.setText(currentArticle.getSection());
-
-            // Set the current article's by line
-            TextView byLineTextView = listItemView.findViewById(R.id.by_line);
+            // Set the current article's fields
+            viewHolder.titleTextView.setText(currentArticle.getTitle());
+            viewHolder.trailTextView.setText(Html.fromHtml(currentArticle.getTrail()));
+            viewHolder.sectionTextView.setText(currentArticle.getSection());
             if (currentArticle.getByLine() != null) {
-                byLineTextView.setText(currentArticle.getByLine());
-                byLineTextView.setVisibility(View.VISIBLE);
+                viewHolder.byLineTextView.setText(currentArticle.getByLine());
+                viewHolder.byLineTextView.setVisibility(View.VISIBLE);
             }
-
-            // Set the current article's date
-            TextView dateTextView = listItemView.findViewById(R.id.date);
             if (currentArticle.getPublicationDate() != null) {
-                dateTextView.setText(getDateString(currentArticle.getPublicationDate()));
-                dateTextView.setVisibility(View.VISIBLE);
+                viewHolder.dateTextView.setText(getDateString(currentArticle.getPublicationDate()));
+                viewHolder.dateTextView.setVisibility(View.VISIBLE);
             }
         }
         return listItemView;
