@@ -10,27 +10,26 @@ public class Article {
     private String mTitle;
     private String mTrail;
     private String mByLine;
+    private String mSection;
     private URL mArticleUrl;
-    private URL mThumbnailUrl;
     private Date mPublicationDate;
 
     /**
      * Create a new {@link Article} object
      *
-     * @param title is the article's title
-     * @param trail is the article's subheading
-     * @param byLine is the name of the author
-     * @param articleUrl is the url of the article in the website
-     * @param thumbnailUrl is the url of the article's thumbnail image in the website
+     * @param title           is the article's title
+     * @param trail           is the article's subheading
+     * @param byLine          is the name of the author
+     * @param section         is the section to which the article belongs
+     * @param articleUrl      is the url of the article in the website
      * @param publicationDate is when the article was published
      */
-    Article(String title, String trail, String byLine, URL articleUrl,
-                   URL thumbnailUrl, Date publicationDate) {
+    Article(String title, String trail, String byLine, String section, URL articleUrl, Date publicationDate) {
         this.mTitle = title;
         this.mTrail = trail;
         this.mByLine = byLine;
+        this.mSection = section;
         this.mArticleUrl = articleUrl;
-        this.mThumbnailUrl = thumbnailUrl;
         this.mPublicationDate = publicationDate;
     }
 
@@ -48,12 +47,12 @@ public class Article {
         return mByLine;
     }
 
-    public URL getArticleUrl() {
-        return mArticleUrl;
+    public String getSection() {
+        return mSection;
     }
 
-    public URL getThumbnailUrl() {
-        return mThumbnailUrl;
+    public URL getArticleUrl() {
+        return mArticleUrl;
     }
 
     public Date getPublicationDate() {

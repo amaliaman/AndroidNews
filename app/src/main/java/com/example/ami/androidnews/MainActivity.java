@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -19,16 +20,17 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Article>> {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Article>>, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String API_URL_STRING = "https://content.guardianapis.com/search?" +
-            "q=android&section=technology&api-key=test&show-fields=trailText,byline,thumbnail&" +
+            "q=android&api-key=test&show-fields=trailText,byline,thumbnail&" +
             "order-by=newest&format=json&type=article";
     private static final int ARTICLE_LOADER_ID = 1;
 
     private ArticleArrayAdapter mAdapter;
     TextView emptyView;
     ProgressBar indeterminateBar;
+    SwipeRefreshLayout swipeLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,20 +58,31 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
         });
 
+        // Connect to the web to get data
+        connectToApi();
+
+        // Set swipe refresh
+        swipeLayout = findViewById(R.id.swiperefresh);
+        swipeLayout.setOnRefreshListener(this);
+        swipeLayout.setColorSchemeResources(R.color.secondaryColor);
+    }
+
+    private void connectToApi() {
         // Check connectivity before querying
         ConnectivityManager cm =
                 (ConnectivityManager) getBaseContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
         NetworkInfo activeNetwork = cm != null ? cm.getActiveNetworkInfo() : null;
+
+        // Procees if there's a connection
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
         if (isConnected) {
             getLoaderManager().initLoader(ARTICLE_LOADER_ID, null, this);
-        }
-        else {
+        } else {
             indeterminateBar.setVisibility(View.GONE);
             emptyView.setText(R.string.no_connection);
         }
     }
+
     /*
     Implementation of LoaderManager.LoaderCallbacks interface
     */
@@ -87,6 +100,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         // Clear the adapter of previous articles data
         mAdapter.clear();
 
+        // Stop swipe refresh
+        swipeLayout.setRefreshing(false);
+
         // If there is a valid list of {@link Article}s, then add them to the adapter's
         // data set. This will trigger the ListView to update.
         if (data != null && !data.isEmpty()) {
@@ -97,5 +113,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoaderReset(Loader<List<Article>> loader) {
         mAdapter.clear();
+    }
+
+    @Override
+    public void onRefresh() {
+        connectToApi();
     }
 }

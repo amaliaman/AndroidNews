@@ -148,6 +148,7 @@ final class QueryUtils {
 
                 // Get properties from 'result'
                 String title = jsonResultObject.optString("webTitle");
+                String section = jsonResultObject.optString("sectionName");
                 String articleUrl = jsonResultObject.optString("webUrl");
                 String date = jsonResultObject.optString("webPublicationDate");
 
@@ -157,11 +158,10 @@ final class QueryUtils {
                 // Get properties from 'fields'
                 String trail = jsonFieldsObject.optString("trailText");
                 String byLine = jsonFieldsObject.optString("byline");
-                String thumbnailUrl = jsonFieldsObject.optString("thumbnail");
 
                 // Add Article to list
-                articles.add(new Article(title, trail, byLine, createUrl(articleUrl),
-                        createUrl(thumbnailUrl), getDateFromString(date)));
+                articles.add(new Article(title, trail, byLine, section,
+                        createUrl(articleUrl), getDateFromString(date)));
             }
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Problem parsing the article JSON results", e);
