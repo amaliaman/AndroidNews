@@ -2,4 +2,38 @@
     <string name="app_name">Android News</string>
     <string name="no_connection">Please check your connection and retry</string>
     <string name="empty_string">No articles found</string>
+
+    <string name="settings_menu_item">Settings</string>
+    <string name="settings_title">Articles Settings</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings For Section Preference [CHAR LIMIT=30] -->
+    <string name="settings_section_label">Section</string>
+    <string name="settings_section_key" translatable="false">section</string>
+    <string name="settings_section_default" translatable="false">@string/settings_section_technology_value</string>
+
+    <!-- Label for section technology option [CHAR LIMIT=20] -->
+    <string name="settings_section_technology_label">Technology</string>
+    <string name="settings_section_technology_value" translatable="false">technology</string>
+
+    <!-- Label for section community option [CHAR LIMIT=20] -->
+    <string name="settings_section_community_label">Community</string>
+    <string name="settings_section_community_value" translatable="false">community</string>
+
+    <!-- Label for section games option [CHAR LIMIT=20] -->
+    <string name="settings_section_games_label">Games</string>
+    <string name="settings_section_games_value" translatable="false">games</string>
+
+    <!-- Strings For Order By Preference [CHAR LIMIT=30] -->
+    <string name="settings_order_by_label">Order By</string>
+    <string name="settings_order_by_key" translatable="false">order_by</string>
+    <string name="settings_order_by_default" translatable="false">@string/settings_order_by_newest_value</string>
+
+    <!-- Label for order_by newest option [CHAR LIMIT=20] -->
+    <string name="settings_order_by_newest_label">Newest</string>
+    <string name="settings_order_by_newest_value" translatable="false">newest</string>
+
+    <!-- Label for order_by relevance option [CHAR LIMIT=20] -->
+    <string name="settings_order_by_relevance_label">Relevance</string>
+    <string name="settings_order_by_relevance_value" translatable="false">relevance</string>
 </resources>
